@@ -27,7 +27,13 @@ def main() -> None:
     os.makedirs(os.path.dirname(out_path), exist_ok=True)
     with open(out_path, "w", encoding="utf-8") as fh:
         fh.write(line)
-    print(f"wrote {len(line)} characters to {out_path}")
+    # Read the file back and check the gate again on what is actually
+    # on disk, so a partial write can never pass as a valid entry.
+    with open(out_path, encoding="utf-8") as fh:
+        written = fh.read()
+    if written != line:
+        raise SystemExit("entry.txt does not match the entry line")
+    print(f"wrote {len(written)} characters to {out_path}")
 
 
 if __name__ == "__main__":
